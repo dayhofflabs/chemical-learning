@@ -44,7 +44,8 @@ We inverse-design the physically interpretable energetic parameters from which r
 - $G^\ddagger_\alpha$ — transition-state energies (one per reaction),
 - $D_\alpha$ — thermodynamic drives (one per reaction),
 
-— via $k^+_\alpha = \exp(G^\ddagger_\alpha - \mu^\circ_{\text{L}} - \mu^\circ_{\text{R}} - D_\alpha/2)$
+— via 
+$k^+_\alpha = \exp(G^\ddagger_\alpha - \mu^\circ_{\text{L}} - \mu^\circ_{\text{R}} - D_\alpha/2)$
 and $k^-_\alpha = \exp(G^\ddagger_\alpha - \mu^\circ_{\text{P}} + D_\alpha/2)$, so that
 **every network the optimizer produces is thermodynamically consistent by
 construction**. $D_\alpha$ enters the two directions with opposite sign — it
