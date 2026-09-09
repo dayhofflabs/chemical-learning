@@ -14,21 +14,19 @@
                                 /____/
 ```
 
-Official implementation of the methods in **"Local energy coupling enhances the expc"** — training chemical
-reaction networks by implicit differentiation so that a steady-state
-concentration reproduces a target function of an environmental input.
+Official implementation of the methods in **"Local energetic coupling enhances the expressivity of chemical computation"** — training chemical
+reaction networks by implicit differentiation so that a steady-state concentration reproduces a target function of an environmental input.
 
 Two ways to use this repository:
 
-- **[`crn_training.ipynb`](crn_training.ipynb)** — the complete method in one
+- **[`crn_training.ipynb`](crn_training.ipynb)** — the complete methods in one
   self-contained notebook: topology, energetic parameterization, steady-state
   solver, implicit-differentiation gradients, a live dashboard, and the paper's
   ODE verification and success gate. Runs on a CPU in about an hour; no data
   download.
 - **[`skills/how-to-train-your-CRN`](skills/how-to-train-your-CRN/SKILL.md)** —
   the same method as an **agent skill**, so a coding agent can set up and run
-  this kind of training on *your* network. Plain text and scripts, no service
-  to sign up for. See [Use the agent skill](#use-the-agent-skill).
+  this kind of training on networks and targets of your choice. See [Use the agent skill](#use-the-agent-skill).
 
 ## Overview
 
@@ -39,20 +37,18 @@ drained at rate $\gamma$:
 $$\dot c_i = \sum_\alpha S_{i\alpha} J_\alpha + \gamma\,(c^{\text{ext}}_i - c_i)$$
 
 The **input** is the reservoir concentration of one monomer, swept over a grid;
-the **output** is the steady-state concentration of one chosen species. What
-makes this an inverse-design problem rather than a generic function fit is that
-rate constants are never touched directly. Every rate is derived from
-physically interpretable energetic parameters —
+the **output** is the steady-state concentration of one chosen species.
+We inverse-design the physically interpretable energetic parameters from which reaction kinetics and thus CRN dynamics derive from:
 
 - $\mu^\circ_i$ — standard chemical potentials (one per species),
 - $G^\ddagger_\alpha$ — transition-state energies (one per reaction),
 - $D_\alpha$ — thermodynamic drives (one per reaction),
 
 — via $k^+_\alpha = \exp(G^\ddagger_\alpha - \mu^\circ_{\text{L}} - \mu^\circ_{\text{R}} - D_\alpha/2)$
-and $k^-_\alpha = \exp(G^\ddagger_\alpha - \mu^\circ_{\text{P}} + D_\alpha/2)$, so
+and $k^-_\alpha = \exp(G^\ddagger_\alpha - \mu^\circ_{\text{P}} + D_\alpha/2)$, so that
 **every network the optimizer produces is thermodynamically consistent by
 construction**. $D_\alpha$ enters the two directions with opposite sign — it
-tilts a reaction and is the only class that breaks detailed balance;
+tilts a reaction and is the only class that can break detailed balance;
 $G^\ddagger_\alpha$ enters both with the same sign and only scales the rate.
 
 Training works by:
@@ -77,10 +73,9 @@ Training works by:
    quasistatic sweep, because the claim is about what a *chemical system* does,
    not about what a root finder found.
 
-**Success is not low loss.** The paper's gate needs all three: every grid point
-converged ($\max_i|F_i| \le 10^{-4}$), the ODE agreeing with the root finder
-(RMSE $< 10^{-2}$), and a good fit ($R^2 \ge 0.98$). A failed fit is a normal,
-informative outcome — the studies below are precisely about which
+**Training success needs:** every grid point converged ($\max_i|F_i| \le 10^{-4}$), 
+the ODE agreeing with the root finder (RMSE $< 10^{-2}$), and a good fit ($R^2 \ge 0.98$). 
+A failed fit is a normal, informative outcome — the studies in the paper are precisely about which
 (topology, target, trainable-set) triples *can* be fit.
 
 ## Quick Start
@@ -94,13 +89,8 @@ pip install "jax[cpu]" diffrax numpy matplotlib jupyterlab
 ```
 
 The stored run used **jax 0.11.1, diffrax 0.7.2, numpy 2.5.2** on Python 3.12.
-No GPU is required.
+No GPU is required. To use GPU install `jax[cuda]`.
 
-> **Note on the ODE verification.** Some diffrax/equinox version pairings break
-> every implicit solver at construction time. §7 uses `Kvaerno5`; if it fails to
-> construct, pin a diffrax/equinox pair whose implicit solvers work rather than
-> falling back to an explicit solver — an explicit solver on a stiff network is
-> not an equivalent test.
 
 ### Run it
 
@@ -137,8 +127,6 @@ is the expected outcome for a single sample from a bin whose success rate is
 
 ## Reproducing the Paper's Studies
 
-Both studies are loops over the knob cells; nothing below the residual changes.
-
 **Scaling study** — how expressivity grows with network size. Sweep KNOB A over
 topologies and KNOB B over target complexity, with an ensemble of seeds at each
 fixed complexity. Expressivity scales logarithmically with network size,
@@ -157,13 +145,7 @@ Published success rates over $7 \times 128 = 896$ runs:
 | all three | 73% |
 
 Nonequilibrium drive is the most effective single resource for steady-state
-expressivity — the paper's central claim. A single notebook run is one sample
-from these distributions, so read individual outcomes accordingly.
-
-The notebook gives the loop skeletons for both studies, and its final section
-documents every point where it follows the production code rather than the
-paper's appendix (init scale, loss normalization, abort threshold, and three
-others), plus what is in the paper but not implemented here.
+expressivity. 
 
 ## Use the Agent Skill
 
@@ -175,9 +157,7 @@ with YAML frontmatter, plus runnable `scripts/`, worked `examples/`, and
 skill supplies root finding, adjoint gradients, trust gating, freezing,
 checkpointing, ODE verification and the success gate.
 
-Skills are plain text and plain files. **Nothing needs to be installed from a
-registry** — copying the directory to where your agent looks for skills is the
-whole installation. For Claude Code:
+To install it, just copy the directory to where your coding agent looks for skills. For Claude Code:
 
 ```bash
 git clone https://github.com/dayhofflabs/chemical-learning.git
@@ -214,33 +194,34 @@ working directory.
 ```
 chemical-learning/
 ├── crn_training.ipynb              # the complete method, end to end
-├── skills/                         # agent skills distilled from the research code
-│   ├── README.md
-│   └── how-to-train-your-CRN/
-│       ├── SKILL.md                # entry point: contract, rationale, failure playbook
-│       ├── scripts/                # the trainer
-│       │   ├── model.py            #   Model/Problem contract, losses, freeze masks
-│       │   ├── solvers.py          #   Newton+Armijo, PTC, grid traversal, adjoints
-│       │   ├── gradients.py        #   adjoint gradient, penalties, Adam, Fisher
-│       │   ├── verify_ode.py       #   independent ODE verification + success gate
-│       │   ├── train_crn.py        #   CLI, training loop, reporting
-│       │   ├── checkpoints.py      #   checkpoint IO and the run logger
-│       │   └── selftest.py         #   contract validator + finite-difference check
-│       ├── examples/               # three worked residuals, easiest first
-│       │   ├── minimal.py          #   a linear chain in ~40 lines, no chemistry
-│       │   ├── mass_action.py      #   thermodynamic mass action, general stoichiometry
-│       │   ├── michaelis_menten.py #   a Hill cascade — deliberately not mass action
-│       │   └── targets.py          #   target construction
-│       ├── experiments/            # a demo experiment.json per example
-│       └── reference/              # residual contract, API, adjoint, solver modes,
-│                                   #   verification, experiment.json schema
-└── LICENSE
+└── skills/                         # agent skills distilled from the research code
+    ├── LICENSE
+    ├── README.md
+    └── how-to-train-your-CRN/
+        ├── SKILL.md                # entry point: contract, rationale, failure playbook
+        ├── scripts/                # the trainer
+        │   ├── model.py            #   Model/Problem contract, losses, freeze masks
+        │   ├── solvers.py          #   Newton+Armijo, PTC, grid traversal, adjoints
+        │   ├── gradients.py        #   adjoint gradient, penalties, Adam, Fisher
+        │   ├── verify_ode.py       #   independent ODE verification + success gate
+        │   ├── train_crn.py        #   CLI, training loop, reporting
+        │   ├── checkpoints.py      #   checkpoint IO and the run logger
+        │   └── selftest.py         #   contract validator + finite-difference check
+        ├── examples/               # three worked residuals, easiest first
+        │   ├── minimal.py          #   a linear chain in ~40 lines, no chemistry
+        │   ├── mass_action.py      #   thermodynamic mass action, general stoichiometry
+        │   ├── michaelis_menten.py #   a Hill cascade — deliberately not mass action
+        │   └── targets.py          #   target construction
+        ├── experiments/            # a demo experiment.json per example
+        └── reference/              # residual contract, API, adjoint, solver modes,
+                                    #   verification, experiment.json schema
 ```
 
 ## Citation
 
 If you use this code in your research, please cite:
 
+(To be updated with correct publication bibtex)
 ```bibtex
 @article{tuccio2026chemical,
   title = {Free-energy driving governs the expressivity of steady-state chemical computation},
@@ -258,7 +239,7 @@ This code is licensed under **PolyForm Noncommercial License 1.0.0**.
 - ❌ **Commercial use**: Prohibited without separate commercial licensing
 - 📧 **Commercial inquiries**: [info@dayhofflabs.com](mailto:info@dayhofflabs.com)
 
-See [LICENSE](LICENSE) for full terms or visit [https://polyformproject.org/licenses/noncommercial/1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)
+See [skills/LICENSE](skills/LICENSE) for full terms or visit [https://polyformproject.org/licenses/noncommercial/1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)
 
 ## Contributing
 
