@@ -60,9 +60,10 @@ Training works by:
    so it is attracted to *dynamically stable* steady states rather than to
    whatever root happens to be nearest.
 2. **Gradients by the implicit function theorem** — differentiating
-   $F(c^*(\theta);\theta) = 0$ gives $\partial\mathcal{L}/\partial\theta =
-   -\lambda^\top \partial F/\partial\theta$ with $\lambda = \mathbb{J}^{-\mathsf T}
-   \partial\mathcal{L}/\partial c^*$. One linear solve per grid point, and cost
+   $F(c^*(\theta);\theta) = 0$ gives
+   $\partial\mathcal{L}/\partial\theta = -\lambda^\top \partial F/\partial\theta$
+   with $\lambda = \mathbb{J}^{-\mathsf T} \partial\mathcal{L}/\partial c^*$.
+   One linear solve per grid point, and cost
    independent of how many solver iterations it took to get there.
    `lax.while_loop` is not reverse-mode differentiable, so backpropagating
    through PTC is not an option anyway.
