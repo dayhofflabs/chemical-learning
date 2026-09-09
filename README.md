@@ -60,9 +60,9 @@ Training works by:
    so it is attracted to *dynamically stable* steady states rather than to
    whatever root happens to be nearest.
 2. **Gradients by the implicit function theorem** — differentiating
-   $F(c^*(\theta);\theta) = 0$ gives
+   $F(c^\ast(\theta);\theta) = 0$ gives
    $\partial\mathcal{L}/\partial\theta = -\lambda^\top \partial F/\partial\theta$
-   with $\lambda = \mathbb{J}^{-\mathsf T} \partial\mathcal{L}/\partial c^*$.
+   with $\lambda = \mathbb{J}^{-\mathsf T} \partial\mathcal{L}/\partial c^\ast$.
    One linear solve per grid point, and cost
    independent of how many solver iterations it took to get there.
    `lax.while_loop` is not reverse-mode differentiable, so backpropagating
@@ -76,7 +76,7 @@ Training works by:
    not about what a root finder found.
 
 **Training success needs:** every grid point converged ($\max_i|F_i| \le 10^{-4}$), 
-the ODE agreeing with the root finder (RMSE $< 10^{-2}$), and a good fit ($R^2 \ge 0.98$). 
+the ODE agreeing with the root finder (RMSE $\lt 10^{-2}$), and a good fit ($R^2 \ge 0.98$). 
 A failed fit is a normal, informative outcome — the studies in the paper are precisely about which
 (topology, target, trainable-set) triples *can* be fit.
 
@@ -136,7 +136,7 @@ predicted primarily by the number of reactions.
 
 **Freezing study** — which energetic class carries the capacity. Fix `abc3` and
 $H = 2$, then sweep KNOB C over the seven non-empty subsets of
-$\{G^\ddagger, \mu^\circ, D\}$ with $\gamma$ frozen at $\gamma = 1$ throughout.
+$\lbrace G^\ddagger, \mu^\circ, D \rbrace$ with $\gamma$ frozen at $\gamma = 1$ throughout.
 Published success rates over $7 \times 128 = 896$ runs:
 
 | trainable class | success rate |
