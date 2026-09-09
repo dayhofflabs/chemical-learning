@@ -1,0 +1,21 @@
+{
+  "id": "hill_cascade",
+  "outdir": "runs/hill_cascade",
+  "plugin": "../examples/michaelis_menten.py",
+  "cfg": {
+    "n_stages": 4,
+    "feedback": false,
+    "init_scale": 0.2,
+    "control": {"range": [0.5, 5.0], "n_points": 24},
+    "_target_note": "A feedforward cascade with dilution has a MONOTONE readout in the feed, so it cannot fit a non-monotone target. A quarter-period sine is monotone and reachable; a gaussian bump plateaus at R^2~0.32 no matter how long you train. Fisher effective-parameter count is what tells you this.",
+    "target": {"kind": "sine", "freq": 0.25, "amp": 0.25, "offset": 0.15}
+  },
+  "training": {
+    "lr": 0.02,
+    "max_epoch": 4000,
+    "solver_mode": "quasistatic_ptc",
+    "trust_tol": 1e-8,
+    "freeze": ["log_gamma"]
+  },
+  "ode_verification": {"mode": "quasistatic"}
+}

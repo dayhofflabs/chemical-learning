@@ -1,0 +1,26 @@
+{
+  "id": "mass_action",
+  "outdir": "runs/mass_action",
+  "plugin": "../examples/mass_action.py",
+  "cfg": {
+    "chemistry": {"alphabet": "ab", "max_length": 3},
+    "init_scale": 0.0,
+    "control": {
+      "variable_species": "a",
+      "range": [1.0, 5.0],
+      "n_points": 32,
+      "fixed_monomer_value": 1.0,
+      "readout_species": "abb"
+    },
+    "_target_note": "Monotone in the swept feed, like the readout. A freq=1.2 sine oscillates and plateaus near R^2~0.14 -- see the same note in hill_cascade.json.",
+    "target": {"kind": "sine", "freq": 0.25, "amp": 0.2, "offset": 0.25}
+  },
+  "training": {
+    "lr": 0.02,
+    "max_epoch": 4000,
+    "solver_mode": "quasistatic_ptc",
+    "trust_tol": 1e-6,
+    "freeze": ["log_gamma"]
+  },
+  "ode_verification": {"mode": "quasistatic"}
+}
