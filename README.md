@@ -224,7 +224,7 @@ If you use this code in your research, please cite:
 (To be updated with correct publication bibtex)
 ```bibtex
 @article{tuccio2026chemical,
-  title = {Free-energy driving governs the expressivity of steady-state chemical computation},
+  title = {Local energetic coupling enhances the expressivity of chemical computation},
   author = {Tuccio, Marco and Rocks, Jason W. and Goldford, Joshua E.},
   year = {2026},
 }
