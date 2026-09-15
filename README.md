@@ -241,9 +241,6 @@ This code is licensed under **PolyForm Noncommercial License 1.0.0**.
 - ❌ **Commercial use**: Prohibited without separate commercial licensing
 - 📧 **Commercial inquiries**: [info@dayhofflabs.com](mailto:info@dayhofflabs.com)
 
-See [skills/LICENSE](skills/LICENSE) for full terms or visit [https://polyformproject.org/licenses/noncommercial/1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)
-
 ## Contributing
 
-This repository is maintained by Dayhoff Labs. For questions or issues, please
-open a GitHub issue.
+This repository is maintained by Dayhoff Labs. For questions or issues, please open a GitHub issue.
